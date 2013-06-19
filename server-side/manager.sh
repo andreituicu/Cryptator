@@ -27,15 +27,15 @@ while true; do
 	echo
 	rm ./requests/$request
 
-	if test $what_to_do == "Create account"
+	if test $what_to_do == "Create account"; then
 	
-	else if test $what_to_do == "Add device"
+	else if test $what_to_do == "Add device"; then
 
-	else if test $what_to_do == "Add files"
+	else if test $what_to_do == "Add files"; then
 
-	else if test $what_to_do == "Lockdown"
+	else if test $what_to_do == "Lockdown"; then
 
-	else if test $what_to_do == "Unlock"
+	else if test $what_to_do == "Unlock"; then
 
 	else 
 
