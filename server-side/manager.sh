@@ -18,6 +18,7 @@ while true; do
 	computer_from=$(cat ./requests/$request | head -n 2 | tail -n 1)
 	computer_to=$(cat ./requests/$request | head -n 3 | tail -n 1)
 	what_to_do=$(cat ./requests/$request | head -n 4 | tail -n 1)
+	starting_point=$(pwd)	
 
 	echo
 	echo "User: $user"
@@ -25,20 +26,66 @@ while true; do
 	echo "For device: $computer_to"
 	echo "Request type: $what_to_do"
 	echo
-	rm ./requests/$request
+	rm -Rf ./requests/$request
 
-	if test $what_to_do == "Create account"; then
-	
-	else if test $what_to_do == "Add device"; then
+	if test "$what_to_do" == "Create account"; then
+		echo "Creating account..."
+			
+	elif test "$what_to_do" == "Add device"; then
+		cd $user > /dev/null
 
-	else if test $what_to_do == "Add files"; then
+		if test $? -ne 0; then
+			echo "No such user!"
+			continue
+		fi
+			
+		echo "Request type: $what_to_do" >> request_history
+		echo "From device: $computer_from" >> request_history
+		echo "For device: $computer_to" >> request_history
+		
+		diff passwd authpasswd > /dev/null
+		
+		if test $? -ne 0; then
+			echo "Incorect password!"
+			echo "Request not completed." >> request_history
+			echo "ERROR 1: Incorect password!" >> request_history
+			echo >> request_history	
+			cd $starting_point 
+			continue
+		fi
 
-	else if test $what_to_do == "Lockdown"; then
+		if test $computer_to != $computer_from; then
+			echo "Request not completed." >> request_history
+			echo "ERROR 2: You can add a device from another!" >> request_history
+			echo >> request_history	
+			cd $starting_point 
+			continue
+		fi
 
-	else if test $what_to_do == "Unlock"; then
+		if ls | grep -q $computer_to; then
+			echo "Request not completed." >> request_history
+			echo "ERROR 3: A device with the same name already exists!" >> request_history
+			echo >> request_history	
+			cd $starting_point 
+			continue
+		fi
+		
+		mkdir $computer_to
+		chmod 700 $computer_to
+		echo "Request succesfully completed" >> request_history	
+		echo >> request_history	
+		cd $starting_point 
 
+	elif test $what_to_do == "Add files"; then 
+		echo "Adding files..."
+
+	elif test $what_to_do == "Lockdown"; then 
+		echo "Initiating lockdown..."
+
+	elif test $what_to_do == "Unlock"; then 
+ 		echo "Unlocking..."
 	else 
-
+		echo "Unknown request type"
 	fi
 
 done 
