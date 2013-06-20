@@ -30,7 +30,7 @@ while true; do
 
 	if test "$what_to_do" == "Create account"; then
 		echo "Creating account..."
-			
+
 	elif test "$what_to_do" == "Add device"; then
 		cd $user > /dev/null
 
@@ -47,9 +47,9 @@ while true; do
 		echo "Request type: $what_to_do" >> request_history
 		echo "From device: $computer_from" >> request_history
 		echo "For device: $computer_to" >> request_history
-		
+
 		diff passwd authpasswd > /dev/null
-		
+
 		if test $? -ne 0; then
 			echo "Incorect password!"
 			echo "Request not completed." >> request_history
@@ -93,6 +93,58 @@ while true; do
 	elif test $what_to_do == "Lockdown"; then 
 		echo "Initiating lockdown..."
 
+		cd $user > /dev/null
+
+		if test $? -ne 0; then
+			echo "No such user!"
+			echo "User: $user Request type: $what_to_do" >> server_errors
+			echo -n "From device: $computer_from " >> server_errors
+			echo "For device: $computer_to" >>server_errors
+			echo "ERROR 0: Unknown user!" >> server_errors
+			echo >> server_errors
+			continue
+		fi
+			
+		echo "Request type: $what_to_do" >> request_history
+		echo "From device: $computer_from" >> request_history
+		echo "For device: $computer_to" >> request_history
+
+		diff passwd authpasswd > /dev/null
+
+		if test $? -ne 0; then
+			echo "Incorect password!"
+			echo "Request not completed." >> request_history
+			echo "ERROR 1: Incorect password!" >> request_history
+			echo >> request_history
+			rm -Rf authpasswd	
+			cd $starting_point 
+			continue
+		fi
+
+		ls | grep -q $computer_to
+		if test $? -ne 0 
+			echo "Request not completed." >> request_history
+			echo "ERROR 4: Unknown device \" $computer_to \" " >> request_history
+			echo >> request_history
+			rm -Rf authpasswd
+			cd $starting_point
+			continue
+		fi
+
+		if ls | grep "alarm-$computer_to" 
+			echo "Request not completed." >> request_history
+			echo "ERROR 5: Already initiated a lockdown" >> request_history
+			echo >> request_history
+			rm -Rf authpasswd
+			cd $starting_point
+			continue
+		fi
+
+		cat passwd $computer_to/files > alarm-$computer_to	
+		
+		rm -Rf authpasswd
+		cd $starting_point
+			
 	elif test $what_to_do == "Unlock"; then 
  		echo "Unlocking..."
 	else 
