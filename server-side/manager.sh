@@ -149,7 +149,7 @@ while true; do
 	elif test $what_to_do == "Unlock"; then 
  		echo "Unlocking..."
 	else 
-		echo "Unknown request type"
+		echo "Unknown request type!"
 	fi
 
 done 
