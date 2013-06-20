@@ -74,6 +74,9 @@ while true; do
 		chmod 700 $computer_to
 		echo "Request succesfully completed" >> request_history	
 		echo >> request_history	
+
+		rm -Rf authpasswd
+
 		cd $starting_point 
 
 	elif test $what_to_do == "Add files"; then 
