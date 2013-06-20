@@ -169,7 +169,7 @@ while true; do
 		rm -Rf authpasswd
 		cd $starting_point
 
-	# 4) Unlocking an account's device
+	# 5) Unlocking an account's device
 	#############################################################################		
 	elif test $what_to_do == "Unlock"; then 
  		echo "Unlocking..."
