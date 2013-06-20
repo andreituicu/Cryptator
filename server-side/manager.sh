@@ -1,9 +1,10 @@
 #! /bin/bash
 
 #This script should run at startup as root
+#The server MUST have a STATIC IP
 
 while true; do
-	
+
 	# Handeling requests:
 
 	touch ./requests/NO_REQUEST 
@@ -41,14 +42,15 @@ while true; do
 	###########################################################################
 	if test "$what_to_do" == "Create account"; then
 		echo "Creating account..."
-
+		#TODO
 
 
 	# 2) Adding a device to the account
 	###########################################################################
 	elif test "$what_to_do" == "Add device"; then
-		cd $user > /dev/null
-
+		cd $user &> /dev/null
+	
+		# Checking for errors/Updating request_history
 		if test $? -ne 0; then
 			echo "No such user!"
 			echo "User: $user Request type: $what_to_do" >> server_errors
@@ -63,6 +65,7 @@ while true; do
 		echo "From device: $computer_from" >> request_history
 		echo "For device: $computer_to" >> request_history
 
+		# Verifing the password
 		diff passwd authpasswd > /dev/null
 
 		if test $? -ne 0; then
@@ -77,7 +80,7 @@ while true; do
 
 		if test $computer_to != $computer_from; then
 			echo "Request not completed." >> request_history
-			echo "ERROR 2: You can add a device from another!" >> request_history
+			echo "ERROR 2: You can't add a device from another!" >> request_history
 			echo >> request_history	
 			rm -Rf authpasswd
 			cd $starting_point 
@@ -93,10 +96,12 @@ while true; do
 			continue
 		fi
 		
+		#Actual changes
 		mkdir $computer_to
 		chmod 700 $computer_to
 		echo "_CRYPT_" > ./$computer_to/files
 		echo "_DELETE_" >> ./$computer_to/files
+		
 		echo "Request succesfully completed" >> request_history	
 		echo >> request_history	
 
@@ -109,14 +114,16 @@ while true; do
 	###########################################################################
 	elif test $what_to_do == "Add files"; then 
 		echo "Adding files..."
+		#TODO
 
 	# 4) Initiating a Lockdown for an account's device 
-   ###########################################################################
+	###########################################################################
 	elif test $what_to_do == "Lockdown"; then 
 		echo "Initiating lockdown..."
 
 		cd $user &> /dev/null
 
+		# Checking for errors/Updating request_history
 		if test $? -ne 0; then
 			echo "No such user!"
 			echo "User: $user Request type: $what_to_do" >> server_errors
@@ -131,7 +138,8 @@ while true; do
 		echo "From device: $computer_from" >> request_history
 		echo "For device: $computer_to" >> request_history
 
-		diff passwd authpasswd > /dev/null
+		# Verifing the password
+		diff passwd authpasswd &> /dev/null
 
 		if test $? -ne 0; then
 			echo "Incorect password!"
@@ -154,7 +162,7 @@ while true; do
 			continue
 		fi
 
-		if ls | grep "alarm-$computer_to"; then 
+		if ls | grep -q "alarm-$computer_to"; then 
 			echo "Request not completed." >> request_history
 			echo "ERROR 5: Already initiated a lockdown/The device is locked!" >> request_history
 			echo >> request_history
@@ -163,10 +171,13 @@ while true; do
 			continue
 		fi
 
+		#Actual changes
 		rm -Rf unlock-$computer_to
 		cat passwd $computer_to/files > alarm-$computer_to	
-		
+
 		rm -Rf authpasswd
+		echo "Request succesfully completed" >> request_history	
+		echo >> request_history	
 		cd $starting_point
 
 	# 5) Unlocking an account's device
@@ -176,6 +187,7 @@ while true; do
 
 		cd $user &> /dev/null
 
+		# Checking for errors/Updating request_history
 		if test $? -ne 0; then
 			echo "No such user!"
 			echo "User: $user Request type: $what_to_do" >> server_errors
@@ -190,7 +202,8 @@ while true; do
 		echo "From device: $computer_from" >> request_history
 		echo "For device: $computer_to" >> request_history
 
-		diff passwd authpasswd > /dev/null
+		# Verifing the password
+		diff passwd authpasswd &> /dev/null
 
 		if test $? -ne 0; then
 			echo "Incorect password!"
@@ -199,6 +212,15 @@ while true; do
 			echo >> request_history
 			rm -Rf authpasswd	
 			cd $starting_point 
+			continue
+		fi
+
+		if test $computer_from != $computer_to; then
+			echo "Request not completed." >> request_history
+			echo "ERROR 7: You can't unlock a device from another!" >> request_history
+			echo >> request_history
+			rm -Rf authpasswd
+			cd $starting_point
 			continue
 		fi
 
@@ -213,7 +235,7 @@ while true; do
 			continue
 		fi
 
-		if ls | grep "unlock-$computer_to"; then 
+		if ls | grep -q "unlock-$computer_to"; then 
 			echo "Request not completed." >> request_history
 			echo "ERROR 6: Already initiated an unlock/The device is not locked!" >> request_history
 			echo >> request_history
@@ -222,9 +244,13 @@ while true; do
 			continue
 		fi
 
+		#Actual changes
 		rm -Rf alarm-$computer_to
 		cat passwd $computer_to/files > unlock-$computer_to	
 		
+		echo "Request succesfully completed" >> request_history	
+		echo >> request_history	
+
 		rm -Rf authpasswd
 		cd $starting_point
 
@@ -236,7 +262,7 @@ while true; do
 				echo "User: $user Request type: $what_to_do" >> request_history
 				echo -n "From device: $computer_from " >> request_history
 				echo "For device: $computer_to" >>request_history
-				echo "ERROR 7: Unknown request type!" >> request_history
+				echo "ERROR 8: Unknown request type!" >> request_history
 				echo >> request_history
 				cd $starting_point
 			fi
@@ -244,8 +270,9 @@ while true; do
 			echo "User: $user Request type: $what_to_do" >> server_errors
 			echo -n "From device: $computer_from " >> server_errors
 			echo "For device: $computer_to" >>server_errors
-			echo "ERROR 7: Unknown request type!" >> server_errors
+			echo "ERROR 8: Unknown request type!" >> server_errors
 			echo >> server_errors
 	fi
 
 done 
+
