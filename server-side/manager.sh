@@ -36,6 +36,11 @@ while true; do
 
 		if test $? -ne 0; then
 			echo "No such user!"
+			echo "User: $user Request type: $what_to_do" >> server_errors
+			echo -n "From device: $computer_from " >> server_errors
+			echo "For device: $computer_to" >>server_errors
+			echo "ERROR 0: Unknown user!" >> server_errors
+			echo >> server_errors
 			continue
 		fi
 			
