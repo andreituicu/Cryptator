@@ -122,7 +122,8 @@ while true; do
 		fi
 
 		ls | grep -q $computer_to
-		if test $? -ne 0 
+
+		if test $? -ne 0; then 
 			echo "Request not completed." >> request_history
 			echo "ERROR 4: Unknown device \" $computer_to \" " >> request_history
 			echo >> request_history
@@ -131,7 +132,7 @@ while true; do
 			continue
 		fi
 
-		if ls | grep "alarm-$computer_to" 
+		if ls | grep "alarm-$computer_to"; then 
 			echo "Request not completed." >> request_history
 			echo "ERROR 5: Already initiated a lockdown" >> request_history
 			echo >> request_history
