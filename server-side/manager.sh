@@ -80,6 +80,8 @@ while true; do
 		
 		mkdir $computer_to
 		chmod 700 $computer_to
+		echo "_CRYPT_" > ./$computer_to/files
+		echo "_DELETE_" >> ./$computer_to/files
 		echo "Request succesfully completed" >> request_history	
 		echo >> request_history	
 
