@@ -54,7 +54,8 @@ while true; do
 			echo "Incorect password!"
 			echo "Request not completed." >> request_history
 			echo "ERROR 1: Incorect password!" >> request_history
-			echo >> request_history	
+			echo >> request_history
+			rm -Rf authpasswd	
 			cd $starting_point 
 			continue
 		fi
@@ -63,6 +64,7 @@ while true; do
 			echo "Request not completed." >> request_history
 			echo "ERROR 2: You can add a device from another!" >> request_history
 			echo >> request_history	
+			rm -Rf authpasswd
 			cd $starting_point 
 			continue
 		fi
@@ -71,6 +73,7 @@ while true; do
 			echo "Request not completed." >> request_history
 			echo "ERROR 3: A device with the same name already exists!" >> request_history
 			echo >> request_history	
+			rm -Rf authpasswd
 			cd $starting_point 
 			continue
 		fi
